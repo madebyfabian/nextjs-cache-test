@@ -1,3 +1,5 @@
+import { cache } from 'react'
+
 export async function loadUser(id: string) {
 	const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
 	const data = (await res.json()) as {
@@ -39,3 +41,14 @@ export async function loadUsers() {
 	}[]
 	return data
 }
+
+async function _loadPageData() {
+	const [users, posts] = await Promise.all([loadUsers(), loadPosts()])
+
+	return {
+		users,
+		posts,
+	}
+}
+
+export default cache(_loadPageData)

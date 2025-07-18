@@ -1,9 +1,9 @@
 import NextLink from 'next/link'
 import UserList from '@/components/UserList'
-import { loadPosts, loadUsers } from '@/data'
+import loadPageData from '@/data'
 
 export const generateMetadata = async () => {
-	const [posts, users] = await Promise.all([loadPosts(), loadUsers()])
+	const { posts, users } = await loadPageData()
 
 	return {
 		title: `${posts.length} posts found by ${users.length} users`,
@@ -12,7 +12,7 @@ export const generateMetadata = async () => {
 }
 
 export default async function Home() {
-	const [posts, users] = await Promise.all([loadPosts(), loadUsers()])
+	const { posts, users } = await loadPageData()
 
 	return (
 		<div className="container mx-auto">

@@ -1,18 +1,6 @@
 import NextLink from 'next/link'
-import { cache } from 'react'
 import UserList from '@/components/UserList'
-import { loadPost, loadPosts, loadUser, loadUsers } from '@/data'
-
-async function _loadPageData() {
-	const [users, posts] = await Promise.all([loadUsers(), loadPosts()])
-
-	return {
-		users,
-		posts,
-	}
-}
-
-const loadPageData = cache(_loadPageData)
+import loadPageData, { loadPost, loadUser } from '@/data'
 
 export const generateStaticParams = async () => {
 	const { posts } = await loadPageData()
