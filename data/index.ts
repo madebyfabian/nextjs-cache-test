@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache'
 import { cache } from 'react'
 
 export async function loadUser(id: string) {
@@ -51,4 +52,4 @@ async function _loadPageData() {
 	}
 }
 
-export default cache(_loadPageData)
+export default unstable_cache(_loadPageData, undefined, { revalidate: 20 })
