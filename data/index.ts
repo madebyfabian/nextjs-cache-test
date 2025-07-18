@@ -1,5 +1,6 @@
 import { unstable_cache } from 'next/cache'
 import { cache } from 'react'
+import { memoize } from './memoize'
 
 export async function loadUser(id: string) {
 	const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
@@ -44,6 +45,7 @@ export async function loadUsers() {
 }
 
 async function _loadPageData() {
+	console.log('_loadPageData')
 	const [users, posts] = await Promise.all([loadUsers(), loadPosts()])
 
 	return {
@@ -52,4 +54,4 @@ async function _loadPageData() {
 	}
 }
 
-export default unstable_cache(_loadPageData, undefined, { revalidate: 20 })
+export default memoize(_loadPageData, 'loadPageData')
