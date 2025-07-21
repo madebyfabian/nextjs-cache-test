@@ -1,9 +1,9 @@
 import NextLink from 'next/link'
 import UserList from '@/components/UserList'
-import loadPageData, { loadPost, loadUser } from '@/data'
+import { loadBasePageData, loadPost, loadUser } from '@/data'
 
 export const generateStaticParams = async () => {
-	const { posts } = await loadPageData()
+	const { posts } = await loadBasePageData()
 
 	return posts.map(post => ({ id: post.id.toString() }))
 }
@@ -13,7 +13,7 @@ export const generateMetadata = async ({
 }: {
 	params: Promise<{ id: string }>
 }) => {
-	const { posts, users } = await loadPageData()
+	const { posts, users } = await loadBasePageData()
 
 	const [post] = await Promise.all([loadPost((await params).id)])
 	const user = await loadUser(String(post.userId))
@@ -29,7 +29,7 @@ export default async function Home({
 }: {
 	params: Promise<{ id: string }>
 }) {
-	const { posts, users } = await loadPageData()
+	const { posts, users } = await loadBasePageData()
 
 	const [post] = await Promise.all([loadPost((await params).id)])
 	const user = await loadUser(String(post.userId))

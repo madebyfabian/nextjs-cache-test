@@ -6,15 +6,16 @@ const sharedCache = new Cache({ ttl: 30, basePath: 'tmp' })
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Producer<T> = (...args: any[]) => Promise<T>
 
-export function memoize<ReturnType, F extends Producer<ReturnType>>(
+export function fileSystemCache<ReturnType, F extends Producer<ReturnType>>(
 	originalFunction: F,
-	key: string = originalFunction.name
+	key: string[]
 ): F {
 	if (!key) {
 		console.error('Cache key is empty, things will probably break.')
 	}
 	const memoized = async (...args: Parameters<F>): Promise<ReturnType> => {
-		const compoundKey = hashDigest([key, ...args])
+		console.log(args)
+		const compoundKey = hashDigest([...key, ...args])
 		const cachedValue = await sharedCache.get(compoundKey)
 		if (cachedValue) {
 			return cachedValue

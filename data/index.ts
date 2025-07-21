@@ -1,57 +1,78 @@
 import { unstable_cache } from 'next/cache'
-import { cache } from 'react'
-import { memoize } from './memoize'
 
-export async function loadUser(id: string) {
-	const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
-	const data = (await res.json()) as {
-		id: number
-		name: string
-	}
-	return data
-}
+// import { fileSystemCache } from './fileSystemCache'
 
-export async function loadPosts() {
-	console.log(`load posts`)
-	const res = await fetch('https://jsonplaceholder.typicode.com/posts')
-	const data = (await res.json()) as {
-		id: number
-		title: string
-		body: string
-		userId: number
-	}[]
-	return data
-}
+// replace this with fileSystemCache to see build-time caching working.
+const cache = unstable_cache
 
-export async function loadPost(id: string) {
-	const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
-	const data = (await res.json()) as {
-		id: number
-		title: string
-		body: string
-		userId: number
-	}
-	return data
-}
+export const loadUser = cache(
+	async (id: string) => {
+		const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
+		const data = (await res.json()) as {
+			id: number
+			name: string
+		}
+		return data
+	},
+	['loadUser'],
+	{ revalidate: 90 }
+)
 
-export async function loadUsers() {
-	console.log(`load users`)
-	const res = await fetch('https://jsonplaceholder.typicode.com/users')
-	const data = (await res.json()) as {
-		id: number
-		name: string
-	}[]
-	return data
-}
+export const loadPosts = cache(
+	async () => {
+		console.log(`load posts`)
+		const res = await fetch('https://jsonplaceholder.typicode.com/posts')
+		const data = (await res.json()) as {
+			id: number
+			title: string
+			body: string
+			userId: number
+		}[]
+		return data
+	},
+	['loadPosts'],
+	{ revalidate: 90 }
+)
 
-async function _loadPageData() {
-	console.log('_loadPageData')
-	const [users, posts] = await Promise.all([loadUsers(), loadPosts()])
+export const loadPost = cache(
+	async (id: string) => {
+		const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
+		const data = (await res.json()) as {
+			id: number
+			title: string
+			body: string
+			userId: number
+		}
+		return data
+	},
+	['loadPost'],
+	{ revalidate: 90 }
+)
 
-	return {
-		users,
-		posts,
-	}
-}
+export const loadUsers = cache(
+	async () => {
+		console.log(`load users`)
+		const res = await fetch('https://jsonplaceholder.typicode.com/users')
+		const data = (await res.json()) as {
+			id: number
+			name: string
+		}[]
+		return data
+	},
+	['loadUsers'],
+	{ revalidate: 90 }
+)
 
-export default memoize(_loadPageData, 'loadPageData')
+export const loadBasePageData = cache(
+	async () => {
+		console.log('loadBasePageData')
+		const [users, posts] = await Promise.all([loadUsers(), loadPosts()])
+
+		return {
+			users,
+			posts,
+		}
+	},
+	['loadPageData'],
+	{ revalidate: 90 }
+)
