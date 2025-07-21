@@ -5,9 +5,22 @@ import { unstable_cache } from 'next/cache'
 // replace this with fileSystemCache to see build-time caching working.
 const cache = unstable_cache
 
+const cachedFetch = async (...args: Parameters<typeof fetch>) => {
+	return await fetch(
+		`https://nextjs-cache-demo-27.localcan.dev/?url=${args[0]}`,
+		{
+			...args[1],
+			next: { revalidate: 90 },
+			cache: 'force-cache',
+		}
+	)
+}
+
 export const loadUser = cache(
 	async (id: string) => {
-		const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
+		const res = await cachedFetch(
+			`https://jsonplaceholder.typicode.com/users/${id}`
+		)
 		const data = (await res.json()) as {
 			id: number
 			name: string
@@ -20,8 +33,7 @@ export const loadUser = cache(
 
 export const loadPosts = cache(
 	async () => {
-		console.log(`load posts`)
-		const res = await fetch('https://jsonplaceholder.typicode.com/posts')
+		const res = await cachedFetch('https://jsonplaceholder.typicode.com/posts')
 		const data = (await res.json()) as {
 			id: number
 			title: string
@@ -36,7 +48,9 @@ export const loadPosts = cache(
 
 export const loadPost = cache(
 	async (id: string) => {
-		const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
+		const res = await cachedFetch(
+			`https://jsonplaceholder.typicode.com/posts/${id}`
+		)
 		const data = (await res.json()) as {
 			id: number
 			title: string
@@ -51,8 +65,7 @@ export const loadPost = cache(
 
 export const loadUsers = cache(
 	async () => {
-		console.log(`load users`)
-		const res = await fetch('https://jsonplaceholder.typicode.com/users')
+		const res = await cachedFetch('https://jsonplaceholder.typicode.com/users')
 		const data = (await res.json()) as {
 			id: number
 			name: string
@@ -65,7 +78,6 @@ export const loadUsers = cache(
 
 export const loadBasePageData = cache(
 	async () => {
-		console.log('loadBasePageData')
 		const [users, posts] = await Promise.all([loadUsers(), loadPosts()])
 
 		return {
