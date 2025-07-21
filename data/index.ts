@@ -1,9 +1,6 @@
-import { unstable_cache } from 'next/cache'
+import { fileSystemCache } from './fileSystemCache'
 
-// import { fileSystemCache } from './fileSystemCache'
-
-// replace this with fileSystemCache to see build-time caching working.
-const cache = unstable_cache
+const cache = fileSystemCache
 
 export const loadUser = cache(
 	async (id: string) => {

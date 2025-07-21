@@ -8,7 +8,9 @@ type Producer<T> = (...args: any[]) => Promise<T>
 
 export function fileSystemCache<ReturnType, F extends Producer<ReturnType>>(
 	originalFunction: F,
-	key: string[]
+	key: string[],
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	options: { revalidate: number }
 ): F {
 	if (!key) {
 		console.error('Cache key is empty, things will probably break.')
