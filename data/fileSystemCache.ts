@@ -16,7 +16,6 @@ export function fileSystemCache<ReturnType, F extends Producer<ReturnType>>(
 		console.error('Cache key is empty, things will probably break.')
 	}
 	const memoized = async (...args: Parameters<F>): Promise<ReturnType> => {
-		console.log(args)
 		const compoundKey = hashDigest([...key, ...args])
 		const cachedValue = await sharedCache.get(compoundKey)
 		if (cachedValue) {
